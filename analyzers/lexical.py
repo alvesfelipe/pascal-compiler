@@ -5,6 +5,7 @@ __email__ = "felipealves@lavid.ufpb.br"
 
 import sys
 import re
+import os
 
 #token lists
 key_words = ['program', 'var', 'integer', 'real',
@@ -31,9 +32,12 @@ token_type = {'Key Word': key_words,
 		 }
 #end dictionary
 
+#define file path
+fileTable = 'files/outTable.txt'
+
 #function for write tuple in file
 def writeInTable(listTuple):
-	f = open('files/outTable.txt', 'a')
+	f = open(fileTable, 'a')
 	f.write(listTuple[0] + '\t' + listTuple[1] + '\t' + listTuple[2] + '\n')
 	f.close()
 
@@ -108,6 +112,12 @@ def spaceSimpleOperator(str, token_list):
 
 #function responsible for make the analyse of the input file, receive a list of all lines
 def lexicalAnalysis(list_file):
+	#remove old file
+	try:
+		os.remove(fileTable)
+	except OSError:
+		pass
+	
 	for index, line in enumerate(list_file):
 		list_file[index] = spaceSimpleOperator(list_file[index], delimiters + relational_operators + 
 											   aditive_operators + multiplicative_operators)
@@ -119,6 +129,11 @@ def lexicalAnalysis(list_file):
 				writeInTable(aux + (str(index + 1),))
 			else:
 				print "ERROR"
+				#remove old file
+				try:
+					os.remove(fileTable)
+				except OSError:
+					pass
 				return
 	print "LEXICAL ANALYSIS SUCCESS"
 
