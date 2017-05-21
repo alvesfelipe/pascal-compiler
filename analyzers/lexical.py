@@ -32,12 +32,12 @@ token_type = {'Key Word': key_words,
 		 }
 #end dictionary
 
-#define file path
-fileTable = 'files/outTable.txt'
+#define file path for output table
+lexicalTable = '../files/outTable.txt'
 
 #function for write tuple in file
 def writeInTable(listTuple):
-	f = open(fileTable, 'a')
+	f = open(lexicalTable, 'a')
 	f.write(listTuple[0] + '\t' + listTuple[1] + '\t' + listTuple[2] + '\n')
 	f.close()
 
@@ -114,7 +114,7 @@ def spaceSimpleOperator(str, token_list):
 def lexicalAnalysis(list_file):
 	#remove old file
 	try:
-		os.remove(fileTable)
+		os.remove(lexicalTable)
 	except OSError:
 		pass
 	
@@ -131,24 +131,24 @@ def lexicalAnalysis(list_file):
 				print "ERROR"
 				#remove old file
 				try:
-					os.remove(fileTable)
+					os.remove(lexicalTable)
 				except OSError:
 					pass
 				return
 	print "LEXICAL ANALYSIS SUCCESS"
 
+#check used by the fact that the script is called by other scripts
+if len(sys.argv) > 1:
+	#read input pascal file
+	with open(sys.argv[1], 'r') as my_file:
+		file = my_file.read()
+	#removing unused elements
+	file = removeTrash(file)
+	#split file by lines
+	list_file = file.splitlines()
 
-#read file, split by line and put in a string
-with open(sys.argv[1], 'r') as my_file:
-	file = my_file.read()
-#removing unused elements
-file = removeTrash(file)
-#split file by lines
-list_file = file.splitlines()
-
-# print list_file
-lexicalAnalysis(list_file)
-# print list_file
+	# print list_file
+	lexicalAnalysis(list_file)
 
 #DEBUG PRINTS
 # number_test = 'aasdf123sd'
