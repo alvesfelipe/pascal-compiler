@@ -8,6 +8,7 @@ from lexical import lexicalTable
 
 table_index = -1
 actual_position = None
+current_element = None
 
 LIST_OF_TYPES = ['integer','real','boolean']
 
@@ -29,6 +30,9 @@ table = loadLexicalTable()
 def nextInTable():
 	global table_index
 	table_index += 1
+	return table_index
+
+def updatedCurrent():
 	return table_index
 
 def isIdentifier(element):
@@ -63,30 +67,28 @@ def checkProgram():
 
 def listVariableDeclaration():
 
-	current_element = nextInTable()
 	global LIST_OF_TYPES
 
-	print "current_element: ", current_element
+	print "current_element comeco: ", updatedCurrent()
 
-	if isIdentifier(current_element):
+	if isIdentifier(nextInTable()):
 		print "isIdentifier: ", table_index
-		current_element = nextInTable()
-		print "current_element: ", table_index
-		if table[current_element][0] == ':':
+		print "updatedCurrent(): ", table_index
+		if table[nextInTable()][0] == ':':
 			print "is : ", table_index
 			if table[nextInTable()][0] in LIST_OF_TYPES:
 				print "is LIST_OF_TYPES: ", table_index
 				if table[nextInTable()][0] == ';':
 					print "is ; ", table_index
 					#check if exists new declaration of variables
-					if isProcedure(current_element + 1):
-						print "isProcedure", table[current_element]
+					if isProcedure(updatedCurrent() + 1):
+						print "isProcedure", table[updatedCurrent()]
 						return True
-					if isCommand(current_element + 1):
-						print "isCommand", table[current_element]
+					if isCommand(updatedCurrent() + 1):
+						print "isCommand", table[updatedCurrent()]
 						return True
 					return listVariableDeclaration()
-		elif table[current_element][0] == ',':
+		elif table[updatedCurrent()][0] == ',':
 			print "is , ", table_index
 			return listVariableDeclaration()
 
@@ -97,26 +99,22 @@ def main():
 	if not checkProgram():
 		return False
 
-	current_element = nextInTable()
+	nextInTable()
 
-	if table[current_element][0] == 'var':
+	if table[updatedCurrent()][0] == 'var':
 		if not listVariableDeclaration():
 			return False
 
-	current_element = table_index
-	if isProcedure(current_element):
+	if isProcedure(updatedCurrent()):
 		checkProcedure()
 
-	current_element = table_index
-	if isCommand(current_element):
+	if isCommand(updatedCurrent()):
 		checkCommand()
 
-	print "current_element Main: ", current_element
+	print "updatedCurrent() Main: ", updatedCurrent()
 	return True
 	
 if main():
 	print "Syntactic analysis was performed and no problems were found."
 else:
 	print "Syntax analysis detected error"
-
-# def identifyProgram():
