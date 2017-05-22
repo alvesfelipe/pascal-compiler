@@ -7,6 +7,7 @@ import re
 from lexical import lexicalTable
 
 table_index = -1
+actual_position = None
 
 LIST_OF_TYPES = ['integer','real','boolean']
 
@@ -47,11 +48,11 @@ def isCommand(element):
 
 def checkProcedure():
 	print "checagem de procedimento"
-	return True
+	return
 
 def checkCommand():
 	print "checagem de comando composto"
-	return True
+	return
 
 def checkProgram():
 	if table[nextInTable()][0] == 'program':
@@ -66,23 +67,24 @@ def listVariableDeclaration():
 	global LIST_OF_TYPES
 
 	print "current_element: ", current_element
-	#check if exists new declaration of variables
-	if isProcedure(current_element):
-		print "isProcedure", table[current_element]
-		return True
-	if isCommand(current_element):
-		print "isCommand", table[current_element]
-		return True
 
 	if isIdentifier(current_element):
 		print "isIdentifier: ", table_index
 		current_element = nextInTable()
+		print "current_element: ", table_index
 		if table[current_element][0] == ':':
 			print "is : ", table_index
 			if table[nextInTable()][0] in LIST_OF_TYPES:
 				print "is LIST_OF_TYPES: ", table_index
 				if table[nextInTable()][0] == ';':
 					print "is ; ", table_index
+					#check if exists new declaration of variables
+					if isProcedure(current_element + 1):
+						print "isProcedure", table[current_element]
+						return True
+					if isCommand(current_element + 1):
+						print "isCommand", table[current_element]
+						return True
 					return listVariableDeclaration()
 		elif table[current_element][0] == ',':
 			print "is , ", table_index
@@ -98,14 +100,17 @@ def main():
 	current_element = nextInTable()
 
 	if table[current_element][0] == 'var':
-		return listVariableDeclaration()
+		listVariableDeclaration()
 
+	current_element = table_index
 	if isProcedure(current_element):
-		return checkProcedure()
+		checkProcedure()
 
+	current_element = table_index
 	if isCommand(current_element):
-		return checkCommand()
+		checkCommand()
 
+	print "current_element Main: ", current_element
 	return True
 	
 if main():
