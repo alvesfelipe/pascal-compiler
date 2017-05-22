@@ -25,23 +25,23 @@ def loadLexicalTable():
 
 table = loadLexicalTable()
 
-def nextInTable(): 
-	global table_index 
-	table_index += 1;
-	return table[table_index]
+def nextInTable():
+	global table_index
+	table_index += 1
+	return table_index
 
 def isIdentifier(element):
-	if element[1] == 'Identifier':
+	if table[element][1] == 'Identifier':
 		return True
 	return False
 
 def isProcedure(element):
-	if element[0] == 'Procedure':
+	if table[element][0] == 'procedure':
 		return True
 	return False
 
 def isCommand(element):
-	if element[0] == 'begin':
+	if table[element][0] == 'begin':
 		return True
 	return False
 
@@ -54,44 +54,61 @@ def checkCommand():
 	return True
 
 def checkProgram():
-	if nextInTable()[0] == 'program':
+	if table[nextInTable()][0] == 'program':
 		if isIdentifier(nextInTable()):
-			if nextInTable()[0] == ';':
-				return True		
+			if table[nextInTable()][0] == ';':
+				return True
 	return False
 
-def checkVariable():
-	current_element = nextInTable() 
+def listVariableDeclaration():
+
+	current_element = nextInTable()
 	global LIST_OF_TYPES
+
+	print "current_element: ", current_element
+	#check if exists new declaration of variables
+	if isProcedure(current_element):
+		print "isProcedure", table[current_element]
+		return True
+	if isCommand(current_element):
+		print "isCommand", table[current_element]
+		return True
+
 	if isIdentifier(current_element):
-		if nextInTable()[0] == ':':
-			if nextInTable()[0] in LIST_OF_TYPES:
-				if nextInTable()[0] == ';':
-					return checkVariable()		
-
-	elif isProcedure(current_element):
-		return checkProcedure()
-
-	elif isCommand(current_element):
-		return checkCommand()
-
-	return False
-
-def checkVariableDeclaration():
-	current_element = nextInTable() 
-	if current_element[0] == 'var':
-		return checkVariable()
-
-	elif isProcedure(current_element):
-		return checkProcedure()
-
-	elif isCommand(current_element):
-		return checkCommand()
+		print "isIdentifier: ", table_index
+		current_element = nextInTable()
+		if table[current_element][0] == ':':
+			print "is : ", table_index
+			if table[nextInTable()][0] in LIST_OF_TYPES:
+				print "is LIST_OF_TYPES: ", table_index
+				if table[nextInTable()][0] == ';':
+					print "is ; ", table_index
+					return listVariableDeclaration()
+		elif table[current_element][0] == ',':
+			print "is , ", table_index
+			return listVariableDeclaration()
 
 	return False
 
+def main():
+
+	if not checkProgram():
+		return False
+
+	current_element = nextInTable()
+
+	if table[current_element][0] == 'var':
+		return listVariableDeclaration()
+
+	if isProcedure(current_element):
+		return checkProcedure()
+
+	if isCommand(current_element):
+		return checkCommand()
+
+	return True
 	
-if checkProgram() and checkVariableDeclaration():
+if main():
 	print "Syntactic analysis was performed and no problems were found."
 else:
 	print "Syntax analysis detected error"
