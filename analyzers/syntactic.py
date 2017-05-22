@@ -34,7 +34,7 @@ def updatedCurrent():
 	return table_index
 
 def isIdentifier(element):
-	if table[element][1] == 'Identifier':
+	if table[element][1] == 'identifier':
 		return True
 	return False
 
@@ -48,6 +48,26 @@ def isCommand(element):
 		return True
 	return False
 
+def insideProcedure():
+	if table[nextInTable()][0] == 'var':
+		print "is VAR checkProcedure: ", updatedCurrent()
+		if not listVariableDeclaration():
+			return False
+		if isCommand(nextInTable()):
+			print "is COMMAND checkProcedure: ", updatedCurrent()
+			print "******PARTE DE RENE"
+			return
+		elif isProcedure(updatedCurrent()):
+			print "isProcedure checkProcedure: ", updatedCurrent()
+			return checkProcedure()
+	if isCommand(updatedCurrent()):
+		print "is COMMAND checkProcedure: ", updatedCurrent()
+		print "******PARTE DE RENE"
+		return
+	elif isProcedure(updatedCurrent()):
+		print "isProcedure checkProcedure: ", updatedCurrent()
+		return checkProcedure()
+
 def checkProcedure():
 
 	print "current_element checkProcedure: ", updatedCurrent()
@@ -60,17 +80,9 @@ def checkProcedure():
 				return False
 			if table[nextInTable()][0] == ';':
 				print "is ; checkProcedure: ", updatedCurrent()
-				if table[nextInTable()][0] == 'var':
-					print "is VAR checkProcedure: ", updatedCurrent()
-					if not listVariableDeclaration():
-						return False
-					if isCommand(nextInTable()):
-						print "is COMMAND checkProcedure: ", updatedCurrent()
-						print "******PARTE DE RENE"
-						return
-					elif isProcedure(updatedCurrent()):
-						print "isProcedure checkProcedure: ", updatedCurrent()
-						return checkProcedure()
+				insideProcedure()
+		elif table[updatedCurrent()][0] == ';':
+			insideProcedure()
 
 	return False
 
