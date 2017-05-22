@@ -100,7 +100,8 @@ def main():
 	current_element = nextInTable()
 
 	if table[current_element][0] == 'var':
-		listVariableDeclaration()
+		if not listVariableDeclaration():
+			return False
 
 	current_element = table_index
 	if isProcedure(current_element):
