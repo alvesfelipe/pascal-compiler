@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 #Lexical Analyzer implementation
 __author__ = "Felipe Alves"
 __email__ = "felipealves@lavid.ufpb.br"
@@ -34,6 +35,11 @@ def nextInTable():
 	table_index += 1
 	return table_index
 
+def incrementInTable(value):
+	global table_index
+	table_index += value
+	return table_index
+
 def updatedCurrent():
 	return table_index
 
@@ -54,40 +60,40 @@ def isCommand(element):
 
 def insideProcedure():
 	if table[nextInTable()][0] == 'var':
-		print "is VAR checkProcedure: ", updatedCurrent()
+		# print "is VAR checkProcedure: ", updatedCurrent()
 		if not listVariableDeclaration():
 			return False
 		if isCommand(nextInTable()):
-			print "is COMMAND checkProcedure: ", updatedCurrent()
-			print "******PARTE DE RENE"
+			# print "is COMMAND checkProcedure: ", updatedCurrent()
+			# print "******PARTE DE RENE"
 			nextInTable()
 			compoundCommand()
 			return
 		elif isProcedure(updatedCurrent()):
-			print "isProcedure checkProcedure: ", updatedCurrent()
+			# print "isProcedure checkProcedure: ", updatedCurrent()
 			return checkProcedure()
 	if isCommand(updatedCurrent()):
-		print "is COMMAND checkProcedure: ", updatedCurrent()
-		print "******PARTE DE RENE"
+		# print "is COMMAND checkProcedure: ", updatedCurrent()
+		# print "******PARTE DE RENE"
 		nextInTable()
 		compoundCommand()
 		return
 	elif isProcedure(updatedCurrent()):
-		print "isProcedure checkProcedure: ", updatedCurrent()
+		# print "isProcedure checkProcedure: ", updatedCurrent()
 		return checkProcedure()
 
 def checkProcedure():
 
-	print "current_element checkProcedure: ", updatedCurrent()
+	# print "current_element checkProcedure: ", updatedCurrent()
 
 	if isIdentifier(nextInTable()):
-		print "isIdentifier checkProcedure: ", updatedCurrent()
+		# print "isIdentifier checkProcedure: ", updatedCurrent()
 		if table[nextInTable()][0] == '(':
-			print "( checkProcedure: ", updatedCurrent()
+			# print "( checkProcedure: ", updatedCurrent()
 			if not listVariableDeclaration():
 				return False
 			if table[nextInTable()][0] == ';':
-				print "is ; checkProcedure: ", updatedCurrent()
+				# print "is ; checkProcedure: ", updatedCurrent()
 				insideProcedure()
 		elif table[updatedCurrent()][0] == ';':
 			insideProcedure()
@@ -95,7 +101,7 @@ def checkProcedure():
 	return False
 
 def checkCommand():
-	print "checagem de comando composto"
+	# print "checagem de comando composto"
 	return
 
 def checkProgram():
@@ -109,69 +115,61 @@ def listVariableDeclaration():
 
 	global LIST_OF_TYPES
 
-	print "current_element comeco: ", updatedCurrent()
+	# print "current_element comeco: ", updatedCurrent()
 
 	if isIdentifier(nextInTable()):
-		print "isIdentifier: ", updatedCurrent()
-		print "updatedCurrent(): ", updatedCurrent()
+		# print "isIdentifier: ", updatedCurrent()
+		# print "updatedCurrent(): ", updatedCurrent()
 		if table[nextInTable()][0] == ':':
-			print "is : ", updatedCurrent()
+			# print "is : ", updatedCurrent()
 			if table[nextInTable()][0] in LIST_OF_TYPES:
-				print "is LIST_OF_TYPES: ", updatedCurrent()
+				# print "is LIST_OF_TYPES: ", updatedCurrent()
 				if table[nextInTable()][0] == ';':
-					print "is ; ", updatedCurrent()
+					# print "is ; ", updatedCurrent()
 					#check if exists new declaration of variables
 					if isProcedure(updatedCurrent() + 1):
-						print "isProcedure", table[updatedCurrent()]
+						# print "isProcedure", table[updatedCurrent()]
 						return True
 					if isCommand(updatedCurrent() + 1):
-						print "isCommand", table[updatedCurrent()]
+						# print "isCommand", table[updatedCurrent()]
 						return True
 					return listVariableDeclaration()
 				elif table[updatedCurrent()][0] == ')':
-					print "is )", updatedCurrent()
+					# print "is )", updatedCurrent()
 					return True
 		elif table[updatedCurrent()][0] == ',':
-			print "is , ", updatedCurrent()
+			# print "is , ", updatedCurrent()
 			return listVariableDeclaration()
 
 	return False
 
-#parte de RENE
+def listOfExpression():
+	if checkExpression():
+		if table[nextInTable()][0] == ',':
+			return listOfExpression();
+		elif table[updatedCurrent()][0] == ')':
+			nextInTable()
+			return True
+		return False
+	return False
+
 def checkFactor():
-	print "checkFactor: ", updatedCurrent()
 	if isIdentifier(updatedCurrent()):
-		print "checkFactor isIdentifier: ", updatedCurrent()
+		nextInTable()
 		if table[updatedCurrent()][0] == '(':
-			print "checkFactor is (: ", updatedCurrent()
-			if listOfExpression():
-				print "checkFactor listOfExpression: ", updatedCurrent()
-				if table[nextInTable()][0] == ')':
-					print "checkFactor is ): ", updatedCurrent()
-					return True
+			nextInTable()
+			return  listOfExpression()
 		return True
 	elif table[updatedCurrent()][1] in LIST_OF_TYPES:
-		print "checkFactor LIST_OF_TYPES: ", updatedCurrent()
 		return True
 	elif table[updatedCurrent()][0] == 'not':
-		print "checkFactor is not: ", updatedCurrent()
+		nextInTable()
 		return checkFactor()
-	elif table[updatedCurrent()][0] == '(':
-		print "checkFactor is (: ", updatedCurrent()
-		if checkExpression():
-			print "checkFactor checkExpression: ", updatedCurrent()
-			if table[nextInTable()][0] == ')':
-				print "checkFactor is ): ", updatedCurrent()
-				return True
 	return False
 
 def checkTerm():
-	print "checkTerm: ", updatedCurrent()
 	if checkFactor():
-		print "checkTerm checkFactor***: ", updatedCurrent()
-		if table[updatedCurrent()+1][0] in LIST_OP_MULTIPLICATIVE:
-			print "LIST_OP_MULTIPLICATIVE checkTerm: ", updatedCurrent()
-			nextInTable()
+		if table[updatedCurrent()][0] in LIST_OP_MULTIPLICATIVE:
 			nextInTable()
 			return checkTerm()
 		return True
@@ -179,94 +177,72 @@ def checkTerm():
 
 
 def simpleExpression():
-	print "simpleExpression: ", updatedCurrent()
-	if table[nextInTable()][0] in LIST_OP_SIGNALS:
-		print "LIST_OP_SIGNALS: ", updatedCurrent()
+	if table[updatedCurrent()][0] in LIST_OP_SIGNALS:
 		nextInTable()
 		return checkTerm()
 	elif checkTerm():
-		print "checkTerm in simpleExpression: ", updatedCurrent()
-		if table[nextInTable()][0] in LIST_OP_ADITIVE:
-			print "LIST_OP_ADITIVE: ", updatedCurrent()
-			return checkTerm()
-		return True
-	return False
-
-def checkExpression():
-	print "checkExpression: ", updatedCurrent()
-	if simpleExpression():
-		print "checkExpression simpleExpression: ", updatedCurrent()
-		if table[updatedCurrent()][0] == ';':
-			print "is ; checkExpression: ", updatedCurrent()
-			return True
-		if table[updatedCurrent()][0] in LIST_OP_RELATIONAL:
-			print "LIST_OP_RELATIONAL checkExpression: ", updatedCurrent()
+		if table[updatedCurrent()][0] in LIST_OP_ADITIVE:
+			nextInTable()
 			return simpleExpression()
 		return True
 	return False
 
-def listOfExpression():
-	print "listOfExpression: ", updatedCurrent()
-	nextInTable()
-	if checkExpression():
-		print "listOfExpression checkExpression: ", updatedCurrent()
-		if table[nextInTable()][0] == ',':
-			print "listOfExpression is , : ", updatedCurrent()
-			listOfExpression()
-		return True
+
+def checkExpression(): #Para sempre antes do delimitador = , ) = < > <= >= <>
+	if simpleExpression():
+		if table[updatedCurrent()][0] in LIST_OP_RELATIONAL:
+			nextInTable()
+			return checkExpression()
+		elif table[updatedCurrent()][0] in [',',')','then']:
+			return True
 	return False
 
-def checkCommand():
-	print "checkCommand: ", updatedCurrent()
-	if isIdentifier(updatedCurrent()):
-		print "is isIdentifier checkCommand: ", updatedCurrent()
-		if table[nextInTable()][0] == ':=':
-			print "is := checkCommand: ", updatedCurrent()
-			if checkExpression():
-				return True
-		elif table[updatedCurrent()][0] == '(':
-			print "is ( checkCommand: ", updatedCurrent()
-			if listOfExpression():
-				if table[nextInTable()][0] == ')':
-					print "is ) checkCommand: ", updatedCurrent()
-					return True
-		elif table[updatedCurrent()][0] == ';':
-			print "is ; checkCommand: ", updatedCurrent()
-			return True
 
-	elif table[updatedCurrent()][0] == 'begin':
-		print "is begin checkCommand: ", updatedCurrent()
+
+def checkCommand(): #Analisa o delimitador
+	if isIdentifier(updatedCurrent()): #variável := expressAO
+		if table[nextInTable()][0] == ':=': #variável := expressão
+			return checkExpression() #variável := expressão
+		elif table[updatedCurrent()][0] == '(':
+			return listOfExpression() #ativação_de_procedimento 
+		return True
+	elif table[updatedCurrent()][0] == 'begin': #comando_composto 
+		nextInTable()
 		return compoundCommand()
 	elif table[updatedCurrent()][0] == 'if':
-		print "is if checkCommand: ", updatedCurrent()
+		nextInTable()
 		if checkExpression():
-			print "checkExpression checkCommand: ", updatedCurrent()
 			if table[updatedCurrent()][0] == 'then':
-				print "is then checkCommand: ", updatedCurrent()
-				if checkCommand():		
-					print "checkCommand checkCommand: ", updatedCurrent()
-					if table[nextInTable()][0] == 'else':
-						print "is else checkCommand: ", updatedCurrent()
+				nextInTable()
+				if checkCommand():
+					if table[updatedCurrent()][0] == 'else':
 						nextInTable()
 						return checkCommand()
-					return True
+					elif table[updatedCurrent()][0] == ';':
+						nextInTable()
+						return True
+					return False
+				return False
+			return False
+		return False
 	elif table[updatedCurrent()][0] == 'while':
-		print "is while checkCommand: ", updatedCurrent()
+		nextInTable()
 		if checkExpression():
-			print "checkExpression checkCommand: ", updatedCurrent()
-			if table[nextInTable()][0] == 'do':
-				print "is do checkCommand: ", updatedCurrent()
+			if table[updatedCurrent()][0] == 'do':
+				nextInTable()
 				return checkCommand()
-	return False
+			return False
+		return False
+	return False		
 
 def listOfCommand():
-	print "listOfCommand: ", updatedCurrent()
+	# print "listOfCommand: ", updatedCurrent()
 	return checkCommand()
 
 def compoundCommand():
-	print "compoundCommand: ", updatedCurrent()
+	# print "compoundCommand: ", updatedCurrent()
 	if(table[updatedCurrent()][0] == 'end'):
-		print "is end compoundCommand: ", updatedCurrent()
+		# print "is end compoundCommand: ", updatedCurrent()
 		return True
 	if not listOfCommand():
 		return False
@@ -292,10 +268,10 @@ def main():
 	if isCommand(updatedCurrent()):
 		return compoundCommand()
 
-	print "updatedCurrent() Main: ", updatedCurrent()
+	# print "updatedCurrent() Main: ", updatedCurrent()
 	return True
 	
 if main():
-	print "Syntactic analysis was performed and no problems were found."
+	 print "Syntactic analysis was performed and no problems were found."
 else:
-	print "Syntax analysis detected error"
+	 print "Syntax analysis detected error"
