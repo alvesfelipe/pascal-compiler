@@ -21,9 +21,9 @@ special_operators = ['or', 'and']
 #end token lists
 
 #defining dictionary with toke type (key) and token list (value)
-token_type = {'Key Word': key_words,
-		  'Delimiter': delimiters,
-		  'Operator': relational_operators + relational_operators_2 + 
+token_type = {'key word': key_words,
+		  'delimiter': delimiters,
+		  'operator': relational_operators + relational_operators_2 + 
 		  			  aditive_operators + multiplicative_operators + special_operators + assignment
 		  # 'Relational Operator': relational_operators,
 		  # 'Aditive Operator': aditive_operators,
@@ -79,11 +79,11 @@ def isToken(token):
 		if any(token == value for value in token_type[key]):
 			return (token, key)
 	if isInt(token):
-		return (token, "Integer")
+		return (token, "integer")
 	if isFloat(token):
-		return (token, "Float")
+		return (token, "float")
 	if isIdentifier(token):
-		return (token, "Identifier")
+		return (token, "identifier")
 	return None
 
 #function for add spaces between simple tokens like: ;, :, . 
