@@ -7,8 +7,6 @@ import re
 from lexical import lexicalTable
 
 table_index = -1
-actual_position = None
-current_element = None
 
 LIST_OF_TYPES = ['integer','real','boolean']
 
@@ -51,8 +49,30 @@ def isCommand(element):
 	return False
 
 def checkProcedure():
-	print "checagem de procedimento"
-	return
+
+	print "current_element checkProcedure: ", updatedCurrent()
+
+	if isIdentifier(nextInTable()):
+		print "isIdentifier checkProcedure: ", updatedCurrent()
+		if table[nextInTable()][0] == '(':
+			print "( checkProcedure: ", updatedCurrent()
+			if not listVariableDeclaration():
+				return False
+			if table[nextInTable()][0] == ';':
+				print "is ; checkProcedure: ", updatedCurrent()
+				if table[nextInTable()][0] == 'var':
+					print "is VAR checkProcedure: ", updatedCurrent()
+					if not listVariableDeclaration():
+						return False
+					if isCommand(nextInTable()):
+						print "is COMMAND checkProcedure: ", updatedCurrent()
+						print "******PARTE DE RENE"
+						return
+					elif isProcedure(updatedCurrent()):
+						print "isProcedure checkProcedure: ", updatedCurrent()
+						return checkProcedure()
+
+	return False
 
 def checkCommand():
 	print "checagem de comando composto"
@@ -72,14 +92,14 @@ def listVariableDeclaration():
 	print "current_element comeco: ", updatedCurrent()
 
 	if isIdentifier(nextInTable()):
-		print "isIdentifier: ", table_index
-		print "updatedCurrent(): ", table_index
+		print "isIdentifier: ", updatedCurrent()
+		print "updatedCurrent(): ", updatedCurrent()
 		if table[nextInTable()][0] == ':':
-			print "is : ", table_index
+			print "is : ", updatedCurrent()
 			if table[nextInTable()][0] in LIST_OF_TYPES:
-				print "is LIST_OF_TYPES: ", table_index
+				print "is LIST_OF_TYPES: ", updatedCurrent()
 				if table[nextInTable()][0] == ';':
-					print "is ; ", table_index
+					print "is ; ", updatedCurrent()
 					#check if exists new declaration of variables
 					if isProcedure(updatedCurrent() + 1):
 						print "isProcedure", table[updatedCurrent()]
@@ -88,8 +108,11 @@ def listVariableDeclaration():
 						print "isCommand", table[updatedCurrent()]
 						return True
 					return listVariableDeclaration()
+				elif table[updatedCurrent()][0] == ')':
+					print "is )", updatedCurrent()
+					return True
 		elif table[updatedCurrent()][0] == ',':
-			print "is , ", table_index
+			print "is , ", updatedCurrent()
 			return listVariableDeclaration()
 
 	return False
@@ -105,8 +128,9 @@ def main():
 		if not listVariableDeclaration():
 			return False
 
-	if isProcedure(updatedCurrent()):
-		checkProcedure()
+	if isProcedure(nextInTable()):
+		if not checkProcedure():
+			return False
 
 	if isCommand(updatedCurrent()):
 		checkCommand()
