@@ -10,7 +10,7 @@ var
     m : integer;
 begin
    if x < y then
-      m := x
+      m := x;
    else
       m := y;
    
