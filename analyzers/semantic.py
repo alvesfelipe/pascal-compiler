@@ -82,10 +82,33 @@ def scrollList():
 		j += 1
 	return True
 
+tupleTypeIdentifier = []
+
+def typeVerification():
+	i = 0
+	j = 0
+	while i < len(table):
+		if table[i][0] == 'var':
+			while i < len(table):
+				if table[i][0] == 'procedure' or table[i][0] == 'begin':
+					break
+				if table[i][1] == 'identifier':
+					aux = i
+					while aux < len(table):
+						if table[aux][0] == ':':
+							auxTuple = (table[aux+1][0],table[i][0])
+							tupleTypeIdentifier.insert(j,auxTuple)
+							j += 1
+						aux += 1
+				i += 1
+		i += 1
+	print tupleTypeIdentifier
+
 def main():
 	if not scrollList():
 		print "Error in semantic analyzer"
 		return
 	print "Success, the program has been analyzed"
 
-main();
+# main();
+typeVerification();
