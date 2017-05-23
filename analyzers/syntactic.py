@@ -10,7 +10,7 @@ from lexical import lexicalTable
 table_index = -1
 
 LIST_OF_TYPES = ['integer','real','boolean']
-LIST_OP_RELATIONAL = ['=','<','>','<=','>=','<>']
+LIST_OP_RELATIONAL = ['=','<','>','<=','>=','<>', '->']
 LIST_OP_SIGNALS = ['-','+']
 LIST_OP_ADITIVE = ['+','-','or']
 LIST_OP_MULTIPLICATIVE = ['*','/','and']
@@ -223,6 +223,8 @@ def checkExpression(): #Para sempre antes do delimitador = , ) = < > <= >= <>
 			return True
 		elif table[updatedCurrent() + 1][0] in LIST_OP_ADITIVE:
 			return simpleExpression()
+		elif table[updatedCurrent()][0] == 'end':
+			return True
 	#alterei
 	if table[updatedCurrent()][0] == 'else':
 		# print "checkExpression is else: ", updatedCurrent()
@@ -279,7 +281,7 @@ def checkCommand(): #Analisa o delimitador
 		if checkExpression():
 			# print "checkCommand checkExpression fora: ", updatedCurrent()
 			if table[updatedCurrent()][0] == 'do':
-				# print "checkCommand is do: ", updatedCurrent()
+				# print "checkCommand is 	: ", updatedCurrent()
 				nextInTable()
 				return checkCommand()
 			return False
@@ -301,8 +303,8 @@ def compoundCommand():
 		#alterei
 		if table[nextInTable()][0] == '.':
 			# print "compoundCommand is . : ", updatedCurrent()
-			nextInTable()
-			return True
+			print "Syntactic analysis was performed and no problems were found."
+			exit(0)
 		elif table[updatedCurrent()][0] == ';':
 			# print "compoundCommand is ; : ", updatedCurrent()
 			nextInTable()
@@ -329,12 +331,13 @@ def main():
 
 	nextInTable()
 	if isCommand(updatedCurrent()):
-		return compoundCommand()
+		if not compoundCommand():
+			return False
 
 	# print "updatedCurrent() Main: ", updatedCurrent()
 	return True
 	
 if main():
-	  print "Syntactic analysis was performed and no problems were found."
+	print "Syntactic analysis was performed and no problems were found."
 else:
-	  print "Syntax analysis detected error"
+	print "Syntax analysis detected error in line ", updatedCurrent()

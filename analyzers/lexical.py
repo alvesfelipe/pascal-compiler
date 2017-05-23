@@ -12,7 +12,7 @@ key_words = ['program', 'var', 'integer', 'real',
 			 'boolean', 'procedure', 'begin', 'end',
 			 'if', 'then', 'else', 'while', 'do', 'not']
 delimiters = [';', '.', ':', '(', ')', ',']
-assignment = [':=']
+assignment = [':=', '->']
 relational_operators = ['=', '<', '>']
 relational_operators_2 = ['<=', '>=', '<>']
 aditive_operators = ['+', '-']
